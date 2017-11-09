@@ -8,6 +8,7 @@ from ctypes.wintypes import DWORD, WORD, BOOL, BOOLEAN, BYTE, USHORT, ULONG, WCH
 
 SAPI = windll.SetupAPI
 BT = windll.BluetoothAPIs
+BP = windll['bthprops.cpl']
 
 def Appearance(a):
     app = {960:'HID', 961:'Keyboard', 962:'Mouse', 963:'Joystick'}
@@ -213,14 +214,97 @@ def GetDevicePaths(uuid, db, field, cid):
         db = DeviceConnect(path, db, field, cid)
     return db
 
+BTH_ADDR = c_ulonglong
+
+class SYSTEMTIME(Structure):
+    _fields_ = [
+        ("wYear", WORD),
+        ("wMonth", WORD),
+        ("wDayOfWeek", WORD),
+        ("wDay", WORD),
+        ("wHour", WORD),
+        ("wMinute", WORD),
+        ("wSecond", WORD),
+        ("wMilliseconds", WORD)]
+
+class BLUETOOTH_ADDRESS(Union):
+    _fields_ = [
+        ("ullLong", BTH_ADDR),
+        ("rgBytes", BYTE * 6)]
+
+class BLUETOOTH_DEVICE_SEARCH_PARAMS(Structure):
+    _fields_ = [
+        ("dwSize", DWORD),
+        ("fReturnAuthenticated", BOOL),
+        ("fReturnRemembered", BOOL),
+        ("fReturnUnknown", BOOL),
+        ("fReturnConnected", BOOL),
+        ("fIssueInquiry", BOOL),
+        ("cTimeoutMultiplier", c_ulong),
+        ("hRadio", HANDLE)]
+
+class BLUETOOTH_DEVICE_INFO(Structure):
+    _fields_ = [
+        ("dwSize", DWORD),
+        ("Address", BLUETOOTH_ADDRESS),
+        ("ulClassofDevice", c_ulong),
+        ("fConnected", BOOL),
+        ("fRemembered", BOOL),
+        ("fAuthenticated", BOOL),
+        ("stLastSeen", SYSTEMTIME),
+        ("stLastUsed", SYSTEMTIME),
+        ("szName", WCHAR * 248)]
+
+def BTClassName(c):
+    major = (c >> 8) & 0x1f
+    minor = (c >> 2) & 0x3f
+    cc = ["Miscellaneous", "Computer", "Phone", "LAN/Network Access Point", "Audio/Video", "Peripheral", "Imaging", "Wearable", "Toy", "Health"]
+    cat = cc[major] if major<len(cc) else "Unknown"
+    sub = None
+    cc4 = ["Uncategorized", "Wearable Headset Device", "Hands-free Device", "Reserved", "Microphone", "Loudspeaker",
+        "Headphones","Portable Audio", "Car audio", "Set-top box", "HiFi Audio Device", "VCR", "Video Camera",
+        "Camcorder", "Video Monitor","Video Display and Loudspeaker", "Video Conferencing", "Reserved", "Gaming/Toy"]
+    cc5 = ["Unknown", "Keyboard", "Mouse", "Keyboard/Mouse"]
+    if major==4: sub = cc4[minor]
+    if major==5: sub = cc5[minor>>4]
+    return ':'.join((cat,sub)) if sub else cat
+
+def GetClassicDevices(db, field):
+
+    BLUETOOTH_DEVICE_FIND = HANDLE
+    sp = BLUETOOTH_DEVICE_SEARCH_PARAMS()
+    df = BLUETOOTH_DEVICE_FIND()
+    di = BLUETOOTH_DEVICE_INFO()
+
+    sp.dwSize = sizeof(sp)
+    sp.hRadio = None
+    sp.fReturnAuthenticated = 1
+    sp.fReturnRemembered = 1
+    sp.fReturnConnected = 1
+    sp.fReturnUnknown = 1
+    sp.fIssueInquiry = 0
+    sp.cTimeoutMultiplier = 0
+
+    di.dwSize = sizeof(di);
+    df = BP.BluetoothFindFirstDevice(byref(sp), byref(di))
+    while True:
+
+        for j in range(len(db)):
+            if di.szName in db[j]['name']: db[j][field] = BTClassName(di.ulClassofDevice)
+
+        if not BP.BluetoothFindNextDevice(df, byref(di)):
+            break
+
+    return db
+
 def main():
     db = GetDeviceNames()
-
+    db = GetClassicDevices(db, 'class')
     db = GetDevicePaths('{0000180F-0000-1000-8000-00805F9B34FB}', db, 'battery_level', 0x2A19)
     db = GetDevicePaths('{00001800-0000-1000-8000-00805F9B34FB}', db, 'appearance', 0x2A01)
     db = GetDevicePaths('{0000180A-0000-1000-8000-00805F9B34FB}', db, 'manufacturer', 0x2A29)
-    #db = GetDevicePaths('{0000180A-0000-1000-8000-00805F9B34FB}', db, 'firmware', 0x2A26)
-    #db = GetDevicePaths('{0000180A-0000-1000-8000-00805F9B34FB}', db, 'serial', 0x2A25)
+    db = GetDevicePaths('{0000180A-0000-1000-8000-00805F9B34FB}', db, 'firmware', 0x2A26)
+    db = GetDevicePaths('{0000180A-0000-1000-8000-00805F9B34FB}', db, 'serial', 0x2A25)
 
     if not debug:
         print ( json.dumps(db, sort_keys=True, indent=4) )
