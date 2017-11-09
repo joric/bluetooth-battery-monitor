@@ -3,7 +3,7 @@ Bluetooth Battery Monitor
 
 Open source Bluetooth battery monitor for Windows. Very alpha stage, supports only BLE reports for now.
 
-##Enumerating Bluetooth devices
+## Enumerating Bluetooth devices
 
 There are a few ways. I'm using regular Win32 API (you don't need UWP for that)
 with `SetupDiGetClassDevs` and `SetupDiEnumDeviceInfo` called with bluetooth device class uuid `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}`.
@@ -29,11 +29,11 @@ and HFPApi/HFPGetBatteryLevel accordingly).
 I will investigate and add HID and HFP reports later. I'm not sure if it's doable with a custom hardware driver
 or with windows API calls, but it shouldn't be too hard to implement.
 
-##HID
+### HID
 
 * http://www.usb.org/developers/hidpage/Hut1_12v2.pdf (see "Battery Strength")
 
-##HFP
+### HFP
 
 * https://www.bluetooth.org/docman/handlers/DownloadDoc.ashx?doc_id=41181 ("Battery Level Indication")
 * https://msdn.microsoft.com/en-us/library/cc510716.aspx?f=255&MSPPError=-2147217396 ("HFPGetBatteryLevel")
