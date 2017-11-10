@@ -5,7 +5,7 @@ Open source Bluetooth battery monitor for Windows
 
 ## Enumerating Bluetooth devices and services
 
-I'm not using UWP, only classic C/C++ API (check out `misc` directory for more C++ examples).
+I'm not using UWP, only classic C/C++ API (check out [misc](tree/master/misc) directory for more C++ examples).
 
 ### API calls:
 
