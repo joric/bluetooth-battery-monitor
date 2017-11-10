@@ -5,20 +5,19 @@ Open source Bluetooth battery monitor for Windows. Very alpha stage, supports on
 
 ## Enumerating Bluetooth devices
 
-There are a few ways. I'm using regular Win32 API (you don't need UWP for that)
-with `SetupDiGetClassDevs` and `SetupDiEnumDeviceInfo` called with bluetooth device class uuid `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}`.
-Then I filter out unneccesary devices by their hardware id obtained with `SetupDiGetDeviceRegistryProperty`.
+I'm using regular Win32 API (you don't really need UWP for that) with
+`SetupDiGetClassDevs` / `SetupDiEnumDeviceInfo` and filter out devices by their hardware
+id obtained with `SetupDiGetDeviceRegistryProperty`. The simplest way to get all the properties of the BLE device
+is to use `SetupDiGetDeviceInterfaceDetail` with corresponding service uuids, and filter by device address.
+To get connection status I'm using `SetupDiGetDeviceProperty` with `DEVPKEY_DeviceContainer_IsConnected` and
+checking the `DN_DEVICE_DISCONNECTED` flag (`0x200000`) - this approach works both for BLE and BT classic devices.
 
-Apparently there's no easy way to list BLE services hierarchically (`Children` property in Device Manager).
-The simplest way is to use `SetupDiGetClassDevs` and `SetupDiGetDeviceInterfaceDetail` with corresponding service uuids,
-filter out by harware ids and collect characteristics you need. I'm using following services and characteristics:
+I'm using the following uuids:
 
+* `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}` (Bluetooth Device) for `SetupDiGetClassDevs`
 * `{00001800-0000-1000-8000-00805F9B34FB}` (Generic Attribute) for Appearance (`0x2A01`)
 * `{0000180F-0000-1000-8000-00805F9B34FB}` (Battery Service) for Battery Level (`0x2A19`)
 * `{0000180A-0000-1000-8000-00805F9B34FB}` (Device Information) for Manufacturer (`0x2A29`)
-
-To get connection status, I'm using approach mentioned on the msdn forums. You simply call `SetupDiGetDeviceProperty` with the key `DEVPKEY_DeviceContainer_IsConnected` and
-check the `DN_DEVICE_DISCONNECTED` flag (0x200000).
 
 ## Bluetooth battery status
 
