@@ -8,7 +8,8 @@ Open source Bluetooth battery monitor for Windows. Very alpha stage, supports on
 I'm not using UWP, only classic C/C++ API. Obtaining battery status is easy for BLE,
 but HID and HFP devices use their own approach
 (see HID Usage Tables "Battery Strength" and HFPGetBatteryLevel accordingly).
-HFP devices also expose HID interface, so maybe it's doable with a system-wide HID-intercepting dll hook.
+HFP devices also expose HID interface, so maybe it's all doable with a system-wide HID-intercepting dll hook.
+
 
 ### API calls:
 
