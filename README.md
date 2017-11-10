@@ -13,7 +13,7 @@ HFP devices also expose HID interface, so maybe it's doable with a system-wide H
 ### API calls:
 
 * `SetupDiGetClassDevs` / `SetupDiEnumDeviceInfo` for getting a list of all bluetooth devices
-* `SetupDiGetDeviceRegistryProperty` / `SPDRP_HARDWAREID` for filtering by address
+* `SetupDiGetDeviceRegistryProperty` / `SPDRP_HARDWAREID` for filtering by device address
 * `BluetoothGATTGetServices` / `BluetoothGATTGetCharacteristics` for BLE properties
 * `SetupDiGetDeviceProperty` / `DEVPKEY_DeviceContainer_IsConnected` for connection status
 
