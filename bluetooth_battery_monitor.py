@@ -91,6 +91,8 @@ def DeviceConnect(path, db, field, cid):
         if address in path:
             device_found = j
             cached = db[j]['status'] != 'connected'
+    if device_found<0:
+        return db
 
     hDevice = windll.kernel32.CreateFileW(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, None, OPEN_EXISTING, 0, None)
     ServicesBufferCount = USHORT()
