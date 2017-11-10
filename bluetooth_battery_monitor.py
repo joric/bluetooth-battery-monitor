@@ -11,8 +11,14 @@ BT = windll.BluetoothAPIs
 BP = windll['bthprops.cpl']
 
 def Appearance(a):
-    app = {960:'HID', 961:'Keyboard', 962:'Mouse', 963:'Joystick'}
-    return app[a] if a in app else 'Bluetooth Device'
+    app = {64:'Phone', 961:'Keyboard', 962:'Mouse', 963:'Joystick', 964:'Gamepad'}
+    return app[a] if a in app else 'Unknown'
+
+def BTClassName(c):
+    ma = (c >> 8) & 0x1f
+    mi = (c >> 2) & 0x3f
+    app = { 2:{3:'Smartphone'}, 4:{1:'Headset', 4:'Microphone'}, 5:{1*16:'Keyboard',2*16:'Mouse',3*16:'Keyboard+Mouse'} }
+    return app[ma][mi] if (ma in app and mi in app[ma]) else 'Unknown'
 
 def new(structure, **kwargs):
     s = structure()
@@ -254,20 +260,6 @@ class BLUETOOTH_DEVICE_INFO(Structure):
         ("stLastSeen", SYSTEMTIME),
         ("stLastUsed", SYSTEMTIME),
         ("szName", WCHAR * 248)]
-
-def BTClassName(c):
-    major = (c >> 8) & 0x1f
-    minor = (c >> 2) & 0x3f
-    cc = ["Miscellaneous", "Computer", "Phone", "LAN/Network Access Point", "Audio/Video", "Peripheral", "Imaging", "Wearable", "Toy", "Health"]
-    cat = cc[major] if major<len(cc) else "Unknown"
-    sub = None
-    cc4 = ["Uncategorized", "Wearable Headset Device", "Hands-free Device", "Reserved", "Microphone", "Loudspeaker",
-        "Headphones","Portable Audio", "Car audio", "Set-top box", "HiFi Audio Device", "VCR", "Video Camera",
-        "Camcorder", "Video Monitor","Video Display and Loudspeaker", "Video Conferencing", "Reserved", "Gaming/Toy"]
-    cc5 = ["Unknown", "Keyboard", "Mouse", "Keyboard/Mouse"]
-    if major==4: sub = cc4[minor]
-    if major==5: sub = cc5[minor>>4]
-    return ':'.join((cat,sub)) if sub else cat
 
 def GetClassicDevices(db, field):
 
