@@ -15,8 +15,10 @@
 //#define MOSS_DEVICE_UUID L"{00001800-0000-1000-8000-00805F9B34FB}" // generic access
 //#define MOSS_DEVICE_UUID L"{00001801-0000-1000-8000-00805F9B34FB}" // generic attrubute
 //#define MOSS_DEVICE_UUID L"{00001812-0000-1000-8000-00805F9B34FB}" // hid reports
-#define MOSS_DEVICE_UUID L"{0000180A-0000-1000-8000-00805F9B34FB}" // device information
-//#define MOSS_DEVICE_UUID L"{0000180F-0000-1000-8000-00805F9B34FB}" // battery service
+//#define MOSS_DEVICE_UUID L"{0000180A-0000-1000-8000-00805F9B34FB}" // device information
+#define MOSS_DEVICE_UUID L"{0000180F-0000-1000-8000-00805F9B34FB}" // battery service
+
+int cached = 1;
 
 void CALLBACK HandleBLENotification(BTH_LE_GATT_EVENT_TYPE EventType, PVOID EventOutParameter, PVOID Context)
 {
@@ -294,7 +296,7 @@ int ConnectBLEDevice() {
 					0,
 					NULL,
 					&descValueDataSize,
-					BLUETOOTH_GATT_FLAG_NONE);
+					cached ? BLUETOOTH_GATT_FLAG_NONE : BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE);
 
 				if (HRESULT_FROM_WIN32(ERROR_MORE_DATA) != hr) {
 					printf("BluetoothGATTGetDescriptorValue - Buffer Size %d\n", hr);
@@ -319,7 +321,8 @@ int ConnectBLEDevice() {
 					(ULONG)descValueDataSize,
 					pDescValueBuffer,
 					NULL,
-					BLUETOOTH_GATT_FLAG_NONE);
+					cached ? BLUETOOTH_GATT_FLAG_NONE : BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE);
+
 				if (S_OK != hr) {
 					printf("BluetoothGATTGetDescriptorValue - Actual Data %d\n", hr);
 				}
@@ -380,7 +383,7 @@ int ConnectBLEDevice() {
 				0,
 				NULL,
 				&charValueDataSize,
-				BLUETOOTH_GATT_FLAG_NONE);
+				cached ? BLUETOOTH_GATT_FLAG_NONE : BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE);
 
 			if (HRESULT_FROM_WIN32(ERROR_MORE_DATA) != hr) {
 				printf("BluetoothGATTGetCharacteristicValue - Buffer Size %d\n", hr);
@@ -405,7 +408,7 @@ int ConnectBLEDevice() {
 				(ULONG)charValueDataSize,
 				pCharValueBuffer,
 				NULL,
-				BLUETOOTH_GATT_FLAG_NONE);
+				cached ? BLUETOOTH_GATT_FLAG_NONE : BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE);
 
 			if (S_OK != hr) {
 				printf("BluetoothGATTGetCharacteristicValue - Actual Data %d\n", hr);

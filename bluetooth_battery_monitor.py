@@ -79,9 +79,18 @@ FILE_SHARE_WRITE = 2
 OPEN_EXISTING = 3
 
 BLUETOOTH_GATT_FLAG_NONE = 0
+BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE = 0x00000004
 
 def DeviceConnect(path, db, field, cid):
     if debug: print('Connecting to:', path)
+
+    cached = 1
+    device_found = -1
+    for j in range(len(db)):
+        address = db[j]['hwid'].split('_')[1]
+        if address in path:
+            device_found = j
+            cached = db[j]['status'] != 'connected'
 
     hDevice = windll.kernel32.CreateFileW(path, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, None, OPEN_EXISTING, 0, None)
     ServicesBufferCount = USHORT()
@@ -105,7 +114,7 @@ def DeviceConnect(path, db, field, cid):
                 0,
                 None,
                 byref(charValueDataSize),
-                BLUETOOTH_GATT_FLAG_NONE)
+                BLUETOOTH_GATT_FLAG_NONE if cached else BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE)
 
             pCharValueBuffer = BTH_LE_GATT_CHARACTERISTIC_VALUE()
             resize(pCharValueBuffer, charValueDataSize.value)
@@ -116,7 +125,7 @@ def DeviceConnect(path, db, field, cid):
                 charValueDataSize,
                 byref(pCharValueBuffer),
                 None,
-                BLUETOOTH_GATT_FLAG_NONE)
+                BLUETOOTH_GATT_FLAG_NONE if cached else BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE)
 
             StringValue = string_at(byref(pCharValueBuffer, sizeof(ULONG)))
             arr = bytearray(StringValue)
@@ -131,10 +140,8 @@ def DeviceConnect(path, db, field, cid):
 
             if debug: print ( '\t%X' % uuid, value )
 
-            for j in range(len(db)):
-                address = db[j]['hwid'].split('_')[1]
-                if address in path and uuid==cid:
-                    db[j][field] = value
+            if device_found!=-1 and uuid==cid: db[device_found][field] = value
+
     return db
 
 
