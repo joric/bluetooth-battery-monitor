@@ -16,10 +16,10 @@ I'm not using UWP, only classic C/C++ API (check out `misc` directory for more C
 
 ### UUIDs:
 
-* `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}` (`Bluetooth Device`) for `SetupDiGetClassDevs`
-* `{00001800-0000-1000-8000-00805F9B34FB}` (`Generic Attribute`) for `Appearance` (`0x2A01`)
-* `{0000180F-0000-1000-8000-00805F9B34FB}` (`Battery Service`) for `Battery Level` (`0x2A19`)
-* `{0000180A-0000-1000-8000-00805F9B34FB}` (`Device Information`) for `Manufacturer` (`0x2A29`)
+* `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}` - `Bluetooth Device` for `SetupDiGetClassDevs`
+* `{00001800-0000-1000-8000-00805F9B34FB}` - `Generic Attribute` for `Appearance` (`0x2A01`)
+* `{0000180F-0000-1000-8000-00805F9B34FB}` - `Battery Service` for `Battery Level` (`0x2A19`)
+* `{0000180A-0000-1000-8000-00805F9B34FB}` - `Device Information` for `Manufacturer` (`0x2A29`)
 
 ## Problems and workarounds:
 
@@ -27,7 +27,7 @@ I'm not using UWP, only classic C/C++ API (check out `misc` directory for more C
 but HID and HFP devices use their own approach (see HID Usage Tables "Battery Strength" and HFPGetBatteryLevel accordingly).
 HFP devices also expose HID interface, probably it's all doable with HID API or a system-wide dll hook. Will implement later.
 * `BLUETOOTH_GATT_FLAG_FORCE_READ_FROM_DEVICE` (`0x00000004`) timeouts on disconnected devices, so check if they're present.
-* `{00001800-0000-1000-8000-00805F9B34FB}` (Generic Attribute) is read only and doesn't work with `GENERIC_WRITE` flag.
+* `{00001800-0000-1000-8000-00805F9B34FB}` (`Generic Attribute`) is read only and doesn't work with `GENERIC_WRITE` flag in `CreateFile`.
 
 ## References
 
