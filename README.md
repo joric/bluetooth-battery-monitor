@@ -17,8 +17,7 @@ filter out by harware ids and collect characteristics you need. I'm using follow
 * `{0000180F-0000-1000-8000-00805F9B34FB}` (Battery Service) for Battery Level (`0x2A19`)
 * `{0000180A-0000-1000-8000-00805F9B34FB}` (Device Information) for Manufacturer (`0x2A29`)
 
-To get connection status, I'm using approach mentioned [here](https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/7b21b52f-bf85-4643-a717-9d62e15ffb51/how-to-get-connection-status-of-bluetooth-le-device-in-windows-81?forum=wdk)
-on the msdn forums. You simply call `SetupDiGetDeviceProperty` with the key `DEVPKEY_DeviceContainer_IsConnected` and
+To get connection status, I'm using approach mentioned on the msdn forums. You simply call `SetupDiGetDeviceProperty` with the key `DEVPKEY_DeviceContainer_IsConnected` and
 check the `DN_DEVICE_DISCONNECTED` flag (0x200000).
 
 ## Bluetooth battery status
@@ -30,6 +29,7 @@ doable with a system-wide HID hook. I will investigate HID and HFP reports later
 
 ## References
 
+* [How to get connection status of bluetooth LE device](https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/7b21b52f-bf85-4643-a717-9d62e15ffb51/how-to-get-connection-status-of-bluetooth-le-device-in-windows-81?forum=wdk)
 * [Universal Serial Bus (USB) - HID Usage Tables (Hut1_12v2.pdf)](http://www.usb.org/developers/hidpage/Hut1_12v2.pdf)
 * [HANDS-FREE PROFILE 1.5 (HFP 1.5_SPEC_V10.pdf)](https://www.bluetooth.org/docman/handlers/DownloadDoc.ashx?doc_id=41181)
 * [HFPApi: HFPGetBatteryLevel](https://msdn.microsoft.com/en-us/library/cc510716.aspx)
