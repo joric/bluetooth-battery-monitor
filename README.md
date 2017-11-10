@@ -24,17 +24,13 @@ check the `DN_DEVICE_DISCONNECTED` flag (0x200000).
 ## Bluetooth battery status
 
 Obtaining Bluetooth battery properties is very easy for BLE but pretty complicated for HID and HFP devices
-which have their own way to report battery level (Generic Device Controls Page/Battery Strength
-and HFPApi/HFPGetBatteryLevel accordingly).
-I will investigate and add HID and HFP reports later. I'm not sure if it's doable with a custom hardware driver
-or with windows API calls, but it shouldn't be too hard to implement.
+They have their own way to report battery level (see HID Usage Tables "Battery Strength"
+and HFPGetBatteryLevel accordingly). HFP devices also expose HID interface so it's probably
+doable with a system-wide HID hook. I will investigate HID and HFP reports later.
 
-### HID
+## References
 
-* http://www.usb.org/developers/hidpage/Hut1_12v2.pdf (see "Battery Strength")
-
-### HFP
-
-* https://www.bluetooth.org/docman/handlers/DownloadDoc.ashx?doc_id=41181 ("Battery Level Indication")
-* https://msdn.microsoft.com/en-us/library/cc510716.aspx?f=255&MSPPError=-2147217396 ("HFPGetBatteryLevel")
+* [Universal Serial Bus (USB) - HID Usage Tables (Hut1_12v2.pdf)](http://www.usb.org/developers/hidpage/Hut1_12v2.pdf)
+* [HANDS-FREE PROFILE 1.5 (HFP 1.5_SPEC_V10.pdf)](https://www.bluetooth.org/docman/handlers/DownloadDoc.ashx?doc_id=41181)
+* [HFPApi: HFPGetBatteryLevel](https://msdn.microsoft.com/en-us/library/cc510716.aspx)
 
