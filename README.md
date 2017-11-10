@@ -3,28 +3,26 @@ Bluetooth Battery Monitor
 
 Open source Bluetooth battery monitor for Windows. Very alpha stage, supports only BLE reports for now.
 
-## Enumerating Bluetooth devices
+## Enumerating Bluetooth devices and services
 
-I'm using regular Win32 API (you don't really need UWP for that) with
-`SetupDiGetClassDevs` / `SetupDiEnumDeviceInfo` and filter out devices by their hardware
-id obtained with `SetupDiGetDeviceRegistryProperty`. The simplest way to get all the properties of the BLE device
-is to use `SetupDiGetDeviceInterfaceDetail` with corresponding service uuids, and filter by device address.
-To get connection status I'm using `SetupDiGetDeviceProperty` with `DEVPKEY_DeviceContainer_IsConnected` and
-checking the `DN_DEVICE_DISCONNECTED` flag (`0x200000`) - this approach works both for BLE and BT classic devices.
+I'm not using UWP, only classic C/C++ API. Obtaining battery status is easy for BLE,
+but HID and HFP devices use their own approach
+(see HID Usage Tables "Battery Strength" and HFPGetBatteryLevel accordingly).
+HFP devices also expose HID interface, so maybe it's doable with a system-wide HID-intercepting dll hook.
 
-I'm using the following uuids:
+### API calls:
+
+* `SetupDiGetClassDevs` / `SetupDiEnumDeviceInfo` for getting a list of all bluetooth devices
+* `SetupDiGetDeviceRegistryProperty` / `SPDRP_HARDWAREID` for filtering by address
+* `BluetoothGATTGetServices` / `BluetoothGATTGetCharacteristics` for BLE properties
+* `SetupDiGetDeviceProperty` / `DEVPKEY_DeviceContainer_IsConnected` for connection status
+
+### UUIDs:
 
 * `{e0cbf06c-cd8b-4647-bb8a-263b43f0f974}` (Bluetooth Device) for `SetupDiGetClassDevs`
 * `{00001800-0000-1000-8000-00805F9B34FB}` (Generic Attribute) for Appearance (`0x2A01`)
 * `{0000180F-0000-1000-8000-00805F9B34FB}` (Battery Service) for Battery Level (`0x2A19`)
 * `{0000180A-0000-1000-8000-00805F9B34FB}` (Device Information) for Manufacturer (`0x2A29`)
-
-## Bluetooth battery status
-
-Obtaining Bluetooth battery properties is very easy for BLE but pretty complicated for HID and HFP devices
-They have their own way to report battery level (see HID Usage Tables "Battery Strength"
-and HFPGetBatteryLevel accordingly). HFP devices also expose HID interface so it's probably
-doable with a system-wide HID hook. I will investigate HID and HFP reports later.
 
 ## References
 
