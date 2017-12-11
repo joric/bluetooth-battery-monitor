@@ -133,7 +133,7 @@ def DeviceConnect(path, db, field, cid):
             arr = bytearray(StringValue)
 
             if uuid==0x2A19: # battery level
-                value = arr[0]
+                value = 0 if len(arr)<1 else arr[0]
             elif uuid==0x2A01: # appearance
                 value = int.from_bytes(arr, byteorder='little')
                 value = Appearance(value)
