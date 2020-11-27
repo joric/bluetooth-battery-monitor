@@ -1,10 +1,11 @@
-#!/bin/python3
+#!/usr/bin/python2
 
 debug = 0
 
 import json
 from ctypes import HRESULT, resize, string_at, wstring_at, CDLL, windll, Structure, Union, POINTER, c_ulong, c_ulonglong, c_int, c_char, byref, sizeof, create_unicode_buffer, WinError, c_byte
 from ctypes.wintypes import DWORD, WORD, BOOL, BOOLEAN, BYTE, USHORT, ULONG, WCHAR, HANDLE
+import codecs
 
 SAPI = windll.SetupAPI
 BT = windll.BluetoothAPIs
@@ -135,7 +136,7 @@ def DeviceConnect(path, db, field, cid):
             if uuid==0x2A19: # battery level
                 value = 0 if len(arr)<1 else arr[0]
             elif uuid==0x2A01: # appearance
-                value = int.from_bytes(arr, byteorder='little')
+                value = int(codecs.encode(arr, 'hex'), 16)
                 value = Appearance(value)
             else: # string
                 value = str(StringValue.decode(errors='ignore'))
